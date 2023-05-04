@@ -4,7 +4,7 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 let getHomepage = (req, res) => {
-  return res.send("Xin chao");
+  return res.render("homepage.ejs");
 };
 let getWebhook = (req, res) => {
   // Parse the query params
@@ -141,8 +141,34 @@ function callSendAPI(sender_psid, response) {
     }
   );
 }
+let setupProfile = (req, res) => {
+  // call profile fb API
+  // Construct the message body
+  let request_body = {
+   "get_started" : "GET_STARTED",
+   "whitelisted_domains" : "https://chatbotweb.onrender.com/"
+  };
+
+  // Send the HTTP request to the Messenger Platform
+  request(
+    {
+      uri: `https://graph.facebook.com/v16.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
+      qs: { access_token: PAGE_ACCESS_TOKEN },
+      method: "POST",
+      json: request_body,
+    },
+    (err, res, body) => {
+      if (!err) {
+        console.log("set up profile success !");
+      } else {
+        console.error("Unable to set up profile:" + err);
+      }
+    }
+  );
+}
 module.exports = {
   getHomepage: getHomepage,
   getWebhook: getWebhook,
   postWebhook: postWebhook,
+  setupProfile: setupProfile
 };
